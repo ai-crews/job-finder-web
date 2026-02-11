@@ -31,6 +31,8 @@
 │   └── index.ejs        # 메인 대시보드 페이지
 ├── server.js            # Express 서버 및 API 연동 로직
 ├── .gitignore           # 보안을 위한 설정 (credentials.json 제외)
+├── .env                 # 환경변수 세팅 
+├── credentials.json     # Google Sheets API 서비스 계정 json 키
 └── package.json         # 의존성 관리
 ```
 
@@ -40,14 +42,14 @@
 - **Node.js**: LTS 버전 이상 설치가 필요.
 - **Google Cloud 프로젝트**: Sheets API 활성화 및 서비스 계정 키 발급이 필요함.
   - 서비스 계정을 만들고 '키'에 들어가 '키 추가' > '새 키 만들기' > 'json'선택 > 파일 다운받고, 'credentials.json'으로 이름 바꾸기 > 해당 파일을 프로젝트에 넣기
-- **.env 파일 생성**: 자신의 SPREADSHEET_ID와 SHEET_RANGE, PORT로 설정하기
+- **.env 파일 생성**: 자신의 SPREADSHEET_ID와 SHEET_RANGE, PORT를 설정하기
 
 ### 2. 설치 및 실행
 터미널에서 아래 명령어를 순서대로 입력.
 
 ```bash
 # 1. 저장소 클론 (본인의 계정명으로 수정 필요)
-git clone [https://github.com/](https://github.com/)[지혜님_계정]/job-finder.git
+git clone https://github.com/ai-crews/job-finder-web.git
 
 # 2. 프로젝트 폴더 이동
 cd job-finder
