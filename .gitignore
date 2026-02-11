@@ -1,0 +1,9 @@
+# 보안 파일 (절대 올리면 안 됨)
+credentials.json
+.env
+
+# 의존성 라이브러리 (용량이 크고 명령어로 다시 설치 가능)
+node_modules/
+
+# OS 설정 파일
+.DS_Store
