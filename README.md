@@ -61,3 +61,5 @@ npm install
 node server.js
 ```
 
+## 📺 시연 영상
+[![Job Finder 시연 영상](https://img.youtube.com/vi/swkIy9-_ouY/maxresdefault.jpg)](https://www.youtube.com/watch?v=swkIy9-_ouY)
