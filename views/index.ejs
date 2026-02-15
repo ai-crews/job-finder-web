@@ -77,7 +77,7 @@
 
             <a href="<%= job[5] %>"
                target="_blank"
-               onclick="trackJobClick('<%= job[0] %>', '<%= job[2] %>')"
+               onclick="trackJobClick('<%= job[0] %>', '<%= job[2] %>', '<%= job[1] %>', 'web')"
                class="w-full md:w-auto text-center border-2 border-gray-200 px-8 py-3 rounded-xl font-bold text-gray-700 hover:bg-gray-50 transition-colors">
                 바로가기
             </a>
@@ -187,19 +187,50 @@
 
     // index.ejs의 <script> 태그 안에 추가
     window.onload = () => {
-        console.log("전체 데이터:", <%- JSON.stringify(jobs) %>);
+        const urlParams = new URLSearchParams(window.location.search);
+        const dest = urlParams.get('url');
+
+        // 🎯 1. URL에서 source 파라미터를 읽어옵니다. (없으면 기본값 'web')
+        // n8n 메일 링크에는 ?source=email 이 붙어있어야 합니다.
+        const source = urlParams.get('source') || 'web';
+
+        if (dest) {
+            const company = urlParams.get('company');
+            const jobTitle = urlParams.get('job_title');
+            const recruitment = urlParams.get('recruitment_title');
+
+            // 🎯 2. 추적 함수에 source 정보를 함께 전달합니다.
+            trackJobClick(company, jobTitle, recruitment, source);
+
+            const mainElement = document.getElementById('job-list');
+            if (mainElement) {
+                mainElement.innerHTML = `
+            <div style="text-align:center; padding:100px 20px;">
+                <h2 style="font-size:24px; font-weight:bold; color:#333;">${company} 공고로 이동 중입니다...</h2>
+                <p style="color:#666; margin-top:10px;">유입 경로: ${source === 'email' ? '📧 메일' : '🌐 웹사이트'}</p>
+                <p style="color:#666; margin-top:10px;">잠시만 기다려 주세요. 🎸</p>
+            </div>`;
+            }
+
+            setTimeout(() => {
+                window.location.href = dest;
+            }, 500);
+
+            return;
+        }
+
         renderPage();
     };
 
-    // 클릭 추척 함수
-    function trackJobClick(companyName, jobTitle) {
+    // 클릭 추적 함수 (기존과 동일)
+    function trackJobClick(company, job, recruitment, clickSource) {
         gtag('event', 'click_job_link', {
-            'event_category': 'Engagement',
-            'event_label': companyName, // 기업명
-            'job_title': jobTitle,      // 직무명
+            'company': company,
+            'job_title': job,
+            'recruitment_title': recruitment,
+            'click_source': clickSource, // GA4에서 이 값으로 필터링 가능
             'value': 1
         });
-        console.log(`추적됨: ${companyName} - ${jobTitle}`);
     }
 </script>
 </body>
