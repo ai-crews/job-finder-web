@@ -2,8 +2,20 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Job Finder</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=<%= gaId %>"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        // debug_mode: true 설정으로 로컬(localhost)에서도 실시간 데이터 확인이 가능합니다.
+        gtag('config', '<%= gaId %>', { 'debug_mode': true });
+    </script>
 </head>
 <body class="bg-[#F9FAFB]">
 <header class="bg-[#56C596] text-white py-14 text-center">
@@ -63,7 +75,9 @@
                 </div>
             </div>
 
-            <a href="<%= job[5] %>" target="_blank"
+            <a href="<%= job[5] %>"
+               target="_blank"
+               onclick="trackJobClick('<%= job[0] %>', '<%= job[2] %>')"
                class="w-full md:w-auto text-center border-2 border-gray-200 px-8 py-3 rounded-xl font-bold text-gray-700 hover:bg-gray-50 transition-colors">
                 바로가기
             </a>
@@ -176,6 +190,17 @@
         console.log("전체 데이터:", <%- JSON.stringify(jobs) %>);
         renderPage();
     };
+
+    // 클릭 추척 함수
+    function trackJobClick(companyName, jobTitle) {
+        gtag('event', 'click_job_link', {
+            'event_category': 'Engagement',
+            'event_label': companyName, // 기업명
+            'job_title': jobTitle,      // 직무명
+            'value': 1
+        });
+        console.log(`추적됨: ${companyName} - ${jobTitle}`);
+    }
 </script>
 </body>
 </html>

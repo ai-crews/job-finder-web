@@ -40,9 +40,15 @@ async function getJobsFromSheet() {
 app.get('/', async (req, res) => {
     try {
         const jobs = await getJobsFromSheet();
-        res.render('index', { jobs });
+
+        // render 함수의 두 번째 인자(객체) 안에 gaId를 포함시킵니다.
+        res.render('index', {
+            jobs: jobs,
+            gaId: process.env.GA_MEASUREMENT_ID
+        });
+
     } catch (err) {
-        console.error('데이터 로드 실패:', err.message); // 상세 에러 메시지 출력
+        console.error('데이터 로드 실패:', err.message);
         res.status(500).send(`시트 데이터를 불러오지 못했습니다. 에러: ${err.message}`);
     }
 });
