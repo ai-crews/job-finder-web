@@ -19,7 +19,7 @@
 - **Backend**: Node.js, Express
 - **Frontend**: EJS (Template Engine), Tailwind CSS
 - **Database**: Google Sheets API v4
-- **Deployment**: Vercel? (예정)
+- **Deployment**: 
 
 
 
@@ -63,3 +63,5 @@ node server.js
 
 ## 📺 시연 영상
 [![Job Finder 시연 영상](https://img.youtube.com/vi/swkIy9-_ouY/maxresdefault.jpg)](https://www.youtube.com/watch?v=swkIy9-_ouY)
+
+## 🛜 실제 이용 URL

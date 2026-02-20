@@ -18,80 +18,98 @@
     </script>
 </head>
 <body class="bg-[#F9FAFB]">
-<header class="bg-[#56C596] text-white py-14 text-center">
-    <h1 class="text-5xl font-bold mb-4">수시 채용공고 확인</h1>
+<header class="bg-[#3E5F44] text-white pt-12 pb-8 text-center">
+    <h1 class="text-4xl font-bold mb-3">수시 채용공고 확인</h1>
     <p class="text-xl mb-3">'바로가기'를 누르면 자세한 정보를 볼 수 있어요!</p>
 </header>
 
-<div class="flex justify-start md:justify-center gap-3 my-10 px-4 overflow-x-auto no-scrollbar">
-    <button id="btn-all" onclick="filterJobs('all', this)"
-            class="filter-btn whitespace-nowrap px-6 py-2 bg-[#FDE68A] border border-yellow-500 rounded-full text-sm font-bold transition-all">
-        전체
-    </button>
-    <% ['MLE', 'DE', 'DA', 'AI Research', 'AI 기획자'].forEach(tag => { %>
-        <button onclick="filterJobs('<%= tag %>', this)"
-                class="filter-btn whitespace-nowrap px-6 py-2 bg-[#FEF9C3] border border-[#FDE68A] rounded-full text-sm font-medium hover:bg-[#FDE68A] transition-all">
-            <%= tag %>
+<section class="max-w-5xl mx-auto px-4 mt-4 md:mt-8 mb-6">
+    <div class="flex justify-start md:justify-center gap-2 md:gap-3 overflow-x-auto no-scrollbar pb-2">
+        <button id="btn-all" onclick="filterJobs('all', this)"
+                class="filter-btn whitespace-nowrap px-5 py-2 bg-[#FDE68A] border border-yellow-500 rounded-full text-xs md:text-sm font-bold transition-all shrink-0">
+            전체
         </button>
-    <% }) %>
-</div>
+        <% ['ML엔지니어', '데이터엔지니어', '데이터분석가', 'AI리서치', 'AI기획자'].forEach(tag => { %>
+            <button onclick="filterJobs('<%= tag %>', this)"
+                    class="filter-btn whitespace-nowrap px-5 py-2 bg-[#FEF9C3] border border-[#FDE68A] rounded-full text-xs md:text-sm font-medium hover:bg-[#FDE68A] transition-all shrink-0">
+                <%= tag %>
+            </button>
+        <% }) %>
+    </div>
+</section>
 
-<div class="max-w-5xl mx-auto px-4 mb-4 flex justify-end">
-    <select id="sort-select" onchange="sortJobs()"
-            class="bg-white border border-gray-200 text-gray-700 py-2 px-4 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#56C596] cursor-pointer">
-        <option value="default">기본순</option>
-        <option value="deadline">마감기한순</option>
-    </select>
-</div>
+<main class="max-w-5xl mx-auto px-4 pb-20 min-h-[50vh]" id="job-list">
+    <% if (jobs && jobs.length > 0) { %>
+        <%# 1. 공고가 있을 때: 기존처럼 리스트 출력 %>
+        <% jobs.forEach((job, index) => { %>
+            <div class="job-card bg-white border border-gray-100 rounded-2xl p-6 md:p-8 mb-6 flex flex-col md:flex-row items-center shadow-sm transition-all"
+                 data-job="<%= job[2] %>"
+                 data-date="<%= job[4] %>"
+                 data-index="<%= index %>">
 
-<main class="max-w-5xl mx-auto px-4 pb-20" id="job-list">
-    <% jobs.forEach((job, index) => { %>
-        <div class="job-card bg-white border border-gray-100 rounded-2xl p-6 md:p-8 mb-6 flex flex-col md:flex-row items-center shadow-sm transition-all"
-             data-job="<%= job[2] %>"
-             data-date="<%= job[4] %>"
-             data-index="<%= index %>">
+                <div class="w-24 h-24 md:w-28 md:h-28 bg-gray-100 flex items-center justify-center rounded-xl mb-4 md:mb-0 md:mr-8 flex-shrink-0 overflow-hidden border border-gray-100">
+                    <% if (job[6] && job[6].trim() !== '') { %>
+                        <img src="<%= job[6] %>" alt="<%= job[0] %> 로고" class="w-full h-full object-contain p-2"
+                             onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');">
+                        <span class="hidden text-black font-extrabold text-lg text-center"><%= job[0] %></span>
+                    <% } else { %>
+                        <div class="w-full h-full bg-[#FACC15] flex items-center justify-center p-4">
+                            <span class="text-black font-extrabold text-lg text-center"><%= job[0] %></span>
+                        </div>
+                    <% } %>
+                </div>
 
-            <div class="w-24 h-24 md:w-28 md:h-28 bg-gray-100 flex items-center justify-center rounded-xl mb-4 md:mb-0 md:mr-8 flex-shrink-0 overflow-hidden border border-gray-100">
-                <% if (job[9] && job[9].trim() !== '') { %>
-                    <img src="<%= job[9] %>" alt="<%= job[0] %> 로고" class="w-full h-full object-contain p-2"
-                         onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');">
-                    <span class="hidden text-black font-extrabold text-lg text-center"><%= job[0] %></span>
-                <% } else { %>
-                    <div class="w-full h-full bg-[#FACC15] flex items-center justify-center p-4">
-                        <span class="text-black font-extrabold text-lg text-center"><%= job[0] %></span>
+                <div class="flex-1 text-center md:text-left mb-6 md:mb-0">
+                    <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2"><%= job[0] %></h2>
+                    <div class="space-y-1 text-base md:text-lg">
+                        <p class="text-gray-700"><span class="font-bold">채용공고</span> <%= job[1] %></p>
+                        <p class="text-gray-700"><span class="font-bold">직무명</span> <%= job[2] %></p>
                     </div>
-                <% } %>
-            </div>
-
-            <div class="flex-1 text-center md:text-left mb-6 md:mb-0">
-                <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2"><%= job[0] %></h2>
-                <div class="space-y-1 text-base md:text-lg">
-                    <p class="text-gray-700"><span class="font-bold">모집부문</span> <%= job[1] %></p>
-                    <p class="text-gray-700"><span class="font-bold">직무명</span> <%= job[2] %></p>
+                    <div class="mt-4 flex flex-wrap justify-center md:justify-start items-center gap-3">
+                        <span class="bg-[#FEF9C3] text-[#854D0E] px-3 py-1 rounded text-xs font-bold"><%= job[3] %></span>
+                        <span class="text-xs md:text-sm text-gray-500">서류마감 <%= job[4] %></span>
+                        <span class="bg-[#FFEDD5] text-[#9A3412] px-2 py-1 rounded text-xs font-bold">
+                            🔥 <%= job[7] || 0 %> 번 확인된 채용공고 입니다! 🔥
+                        </span>
+                    </div>
                 </div>
-                <div class="mt-4 flex flex-wrap justify-center md:justify-start items-center gap-3">
-                    <span class="bg-[#FEF9C3] text-[#854D0E] px-3 py-1 rounded text-xs font-bold"><%= job[3] %></span>
-                    <span class="text-xs md:text-sm text-gray-500">접수마감 <%= job[4] %></span>
-                </div>
-            </div>
 
-            <a href="<%= job[5] %>"
-               target="_blank"
-               onclick="trackJobClick('<%= job[0] %>', '<%= job[2] %>', '<%= job[1] %>', 'web')"
-               class="w-full md:w-auto text-center border-2 border-gray-200 px-8 py-3 rounded-xl font-bold text-gray-700 hover:bg-gray-50 transition-colors">
-                바로가기
-            </a>
+                <a href="<%= job[5] %>"
+                   target="_blank"
+                   onclick="trackJobClick('<%= job[0] %>', '<%= job[2] %>', '<%= job[1] %>', 'web', 'web')"
+                   class="w-full md:w-auto text-center border-2 border-gray-200 px-8 py-3 rounded-xl font-bold text-gray-700 hover:bg-gray-50 transition-colors">
+                    바로가기
+                </a>
+            </div>
+        <% }) %>
+    <% } else { %>
+        <%# 2. 공고가 없을 때: 안내 메시지 출력 %>
+        <div class="flex flex-col items-center justify-center py-20 bg-white border border-dashed border-gray-200 rounded-3xl">
+            <div class="text-6xl mb-4">☕</div>
+            <p class="text-xl font-bold text-gray-900 mb-2">현재 등록된 공고가 없습니다.</p>
+            <p class="text-gray-500 text-center">나중에 다시 방문해 주세요!<br>새로운 공고를 준비 중입니다.</p>
         </div>
-    <% }) %>
+    <% } %>
+        <div id="no-filter-results" class="hidden flex flex-col items-center justify-center py-20 bg-white border border-dashed border-gray-200 rounded-3xl">
+            <div class="text-6xl mb-4">🔍</div>
+            <p class="text-xl font-bold text-gray-900 mb-2">해당 직무의 공고가 현재 없습니다.</p>
+            <p class="text-gray-500 text-center px-4">다른 직무를 선택하시거나<br class="md:hidden"> 전체 공고를 확인해 보세요!</p>
+        </div>
 </main>
 
 <div id="pagination" class="flex justify-center gap-2 mt-8 mb-20">
 </div>
 
-<footer class="bg-[#56C596] text-white py-24 text-center">
-    <h2 class="text-7xl font-black italic mb-4 tracking-tighter">JOB FINDER</h2>
-    <p class="text-xl font-medium">당신의 성공적인 커리어를 응원합니다</p>
+<footer class="bg-[#3E5F44] text-white py-16 text-center">
+    <h2 class="text-5xl md:text-7xl font-black mb-6 tracking-tighter" style="font-family: 'Montserrat', sans-serif;">
+        JOB FINDER
+    </h2>
+
+    <div class="space-y-2 text-sm md:text-base font-medium opacity-90" style="font-family: 'Pretendard', sans-serif;">
+        <p class="font-bold text-lg mb-1">당신의 성공적인 커리어를 응원합니다</p>
+    </div>
 </footer>
+
 
 <script>
     let currentPage = 1;
@@ -102,6 +120,20 @@
         // 1. 현재 필터링된(숨겨지지 않은) 카드들만 추출
         const allCards = Array.from(document.querySelectorAll('.job-card'));
         const visibleCards = allCards.filter(card => !card.classList.contains('filtered-out'));
+
+        // 🎯 추가: 필터링된 결과가 0개인지 확인
+        const noResultMsg = document.getElementById('no-filter-results');
+        if (visibleCards.length === 0) {
+            if (noResultMsg) {
+                noResultMsg.classList.remove('hidden');
+                noResultMsg.classList.add('flex');
+            }
+        } else {
+            if (noResultMsg) {
+                noResultMsg.classList.add('hidden');
+                noResultMsg.classList.remove('flex');
+            }
+        }
 
         const totalPages = Math.ceil(visibleCards.length / itemsPerPage);
 
@@ -128,7 +160,7 @@
         for (let i = 1; i <= totalPages; i++) {
             const btn = document.createElement('button');
             btn.innerText = i;
-            btn.className = `px-4 py-2 rounded-lg border ${i === currentPage ? 'bg-[#56C596] text-white border-[#56C596]' : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'}`;
+            btn.className = `px-4 py-2 rounded-lg border ${i === currentPage ? 'bg-[#4c6b52] text-white border-[#3E5F44]' : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'}`;
             btn.onclick = () => {
                 currentPage = i;
                 renderPage();
@@ -167,22 +199,19 @@
         renderPage();
     }
 
-    // 기존 정렬 함수 수정
     function sortJobs() {
-        const sortType = document.getElementById('sort-select').value;
         const container = document.getElementById('job-list');
         const cards = Array.from(container.getElementsByClassName('job-card'));
 
+        // 무조건 마감기한(data-date) 순으로 정렬
         cards.sort((a, b) => {
-            if (sortType === 'deadline') {
-                return a.getAttribute('data-date').localeCompare(b.getAttribute('data-date'));
-            } else {
-                return a.getAttribute('data-index') - b.getAttribute('data-index');
-            }
+            const dateA = a.getAttribute('data-date');
+            const dateB = b.getAttribute('data-date');
+            return dateA.localeCompare(dateB); // 오름차순 (빨리 마감되는 순)
         });
 
+        // 정렬된 순서대로 DOM에 다시 배치
         cards.forEach(card => container.appendChild(card));
-        renderPage(); // 정렬 후 다시 그리기
     }
 
     // index.ejs의 <script> 태그 안에 추가
@@ -190,17 +219,20 @@
         const urlParams = new URLSearchParams(window.location.search);
         const dest = urlParams.get('url');
 
-        // 🎯 1. URL에서 source 파라미터를 읽어옵니다. (없으면 기본값 'web')
+        // 🎯 URL에서 source 파라미터를 읽어오는 붑분 (없으면 기본값 'web')
         // n8n 메일 링크에는 ?source=email 이 붙어있어야 합니다.
         const source = urlParams.get('source') || 'web';
+
+        //  URL에서 user_email 파라미터 읽어오기
+        const userId = urlParams.get('user_id') || 'unknown';
 
         if (dest) {
             const company = urlParams.get('company');
             const jobTitle = urlParams.get('job_title');
             const recruitment = urlParams.get('recruitment_title');
 
-            // 🎯 2. 추적 함수에 source 정보를 함께 전달합니다.
-            trackJobClick(company, jobTitle, recruitment, source);
+            // 🎯 2. 추적 함수에 source 정보를 함께 전달
+            trackJobClick(company, jobTitle, recruitment, source, userId);
 
             const mainElement = document.getElementById('job-list');
             if (mainElement) {
@@ -211,6 +243,16 @@
                 <p style="color:#666; margin-top:10px;">잠시만 기다려 주세요. 🎸</p>
             </div>`;
             }
+            // 헤더와 푸터 숨기기
+            const header = document.querySelector('header');
+            const footer = document.querySelector('footer');
+            const filterSection = document.querySelector('.flex.justify-start'); // 필터 버튼 영역
+            const sortSelect = document.querySelector('#sort-select')?.parentElement; // 정렬 셀렉트 박스
+
+            if (header) header.style.display = 'none';
+            if (footer) footer.style.display = 'none';
+            if (filterSection) filterSection.style.display = 'none';
+            if (sortSelect) sortSelect.style.display = 'none';
 
             setTimeout(() => {
                 window.location.href = dest;
@@ -219,18 +261,37 @@
             return;
         }
 
-        renderPage();
+        if (!dest) {
+            sortJobs();   // 1. 페이지 로드 시 정렬 먼저 하고
+            renderPage(); // 2. 그 다음 화면에 그리기
+        }
     };
 
     // 클릭 추적 함수 (기존과 동일)
-    function trackJobClick(company, job, recruitment, clickSource) {
+    function trackJobClick(company, job, recruitment, clickSource, userId) {
         gtag('event', 'click_job_link', {
             'company': company,
             'job_title': job,
             'recruitment_title': recruitment,
             'click_source': clickSource, // GA4에서 이 값으로 필터링 가능
+            'user_id': userId, //유저 별 클릭 활동 분석
             'value': 1
         });
+
+        // 서버에 클릭 알림 (이 부분이 정확해야 합니다)
+        fetch('/api/jobs/click', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json' // JSON 형식임을 명시
+            },
+            body: JSON.stringify({
+                recruitment_title: recruitment,
+                company: company
+            })
+        })
+            .then(res => res.json())
+            .then(data => console.log('성공:', data))
+            .catch(err => console.error('에러:', err));
     }
 </script>
 </body>
