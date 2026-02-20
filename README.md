@@ -13,6 +13,7 @@
 - **직무 필터링**: MLE, DE, DA 등 직무 카테고리별 필터링 기능
 - **마감기한 정렬**: 마감기한이 임박한 순서대로 공고 정렬 기능
 - **페이지네이션**: 많은 기업의 채용공고가 있을때 10개 단위 페이지 처리
+- **공고 클릭 수 확인**: 어떤 공고가 얼마나 클릭되었는지 MongoDB를 통해 확인
 - **반응형 디자인**: 스마트폰에서도 확인 가능한 UI 제공
 
 ## 🛠 Tech Stack
@@ -39,16 +40,17 @@
 ## ⚙️ 초기 세팅 가이드 (Getting Started)
 
 ### 1. 필수 요구사항
-- **Node.js**: LTS 버전 이상 설치가 필요.
-- **Google Cloud 프로젝트**: Sheets API 활성화 및 서비스 계정 키 발급이 필요함.
+- **Node.js**: LTS 버전 이상 설치가 필요
+- **Google Cloud 프로젝트**: Sheets API 활성화 및 서비스 계정 키 발급이 필요함
   - 서비스 계정을 만들고 '키'에 들어가 '키 추가' > '새 키 만들기' > 'json'선택 > 파일 다운받고, 'credentials.json'으로 이름 바꾸기 > 해당 파일을 프로젝트에 넣기
-- **.env 파일 생성**: 자신의 SPREADSHEET_ID와 SHEET_RANGE, PORT를 설정하기
+- **MongoDB Atlas**: 공고 클릭 수 저장을 위한 DB 생성이 필요함
+- **.env 파일 생성**: 자신의 SPREADSHEET_ID와 SHEET_RANGE, PORT 등을 설정하기
 
 ### 2. 설치 및 실행
 터미널에서 아래 명령어를 순서대로 입력.
 
 ```bash
-# 1. 저장소 클론 (본인의 계정명으로 수정 필요)
+# 1. 저장소 클론
 git clone https://github.com/ai-crews/job-finder-web.git
 
 # 2. 프로젝트 폴더 이동
@@ -59,6 +61,17 @@ npm install
 
 # 4. 로컬 서버 실행
 node server.js
+```
+
+### .env 파일 예시
+```bash
+SPREADSHEET_ID=시트 아이디
+SHEET_RANGE=Sheet1!A2:H
+
+PORT=3000
+
+MONGODB_URI=mongodb+srv://<사용자아이디>:<비밀번호>@click.aug8uva.mongodb.net/myJobs?retryWrites=true&w=majority
+GA_MEASUREMENT_ID=G-영문숫자
 ```
 
 ## 📺 시연 영상
