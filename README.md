@@ -71,10 +71,18 @@ SHEET_RANGE=Sheet1!A2:H
 PORT=3000
 
 MONGODB_URI=mongodb+srv://<사용자아이디>:<비밀번호>@click.aug8uva.mongodb.net/myJobs?retryWrites=true&w=majority
+
 GA_MEASUREMENT_ID=G-영문숫자
+
+GOOGLE_CREDENTIALS='{credentials.json 내용}'
+
 ```
 
-## 📺 시연 영상
-[![Job Finder 시연 영상](https://img.youtube.com/vi/swkIy9-_ouY/maxresdefault.jpg)](https://www.youtube.com/watch?v=swkIy9-_ouY)
+## 📺 시연 영상 및 사진
+![스크린샷 2026-02-22 오전 12.10.55.png](../../Desktop/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7%202026-02-22%20%EC%98%A4%EC%A0%84%2012.10.55.png)
+
+[![Job Finder 시연 영상](https://img.youtube.com/vi/uMQhQMBzzP8/0.jpg)](https://www.youtube.com/watch?v=uMQhQMBzzP8)
+
 
 ## 🛜 실제 이용 URL
+https://job-finder-web-production.up.railway.app/
