@@ -31,7 +31,7 @@ const Click = mongoose.model('Click', clickSchema);
 
 async function getJobsFromSheet() {
     const auth = new google.auth.GoogleAuth({
-        keyFile: 'credentials.json',
+        credentials: JSON.parse(process.env.GOOGLE_CREDENTIALS), // 환경 변수에서 읽어옴
         scopes: ['https://www.googleapis.com/auth/spreadsheets.readonly'],
     });
     const sheets = google.sheets({ version: 'v4', auth });
