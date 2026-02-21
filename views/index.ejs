@@ -235,8 +235,8 @@
         // n8n 메일 링크에는 ?source=email 이 붙어있어야 합니다.
         const source = urlParams.get('source') || 'web';
 
-        //  URL에서 user_email 파라미터 읽어오기
-        const userId = urlParams.get('user_id') || 'unknown';
+        //  URL에서 user_id 파라미터 읽어오기
+        const userId = urlParams.get('user_id') || 'web';
 
         if (dest) {
             const company = urlParams.get('company');
@@ -286,7 +286,7 @@
             'job_title': job,
             'recruitment_title': recruitment,
             'click_source': clickSource, // GA4에서 이 값으로 필터링 가능
-            'user_id': userId, //유저 별 클릭 활동 분석
+            'user_identifier': userId, //유저 별 클릭 활동 분석
             'value': 1
         });
 
