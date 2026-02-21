@@ -30,6 +30,14 @@ const Click = mongoose.model('Click', clickSchema);
 
 
 async function getJobsFromSheet() {
+
+    // 디버깅을 위해 추가: 변수가 들어오는지 확인
+    console.log("GOOGLE_CREDENTIALS 존재 여부:", !!process.env.GOOGLE_CREDENTIALS);
+
+    if (!process.env.GOOGLE_CREDENTIALS) {
+        throw new Error("GOOGLE_CREDENTIALS 환경 변수가 설정되지 않았습니다.");
+    }
+
     const auth = new google.auth.GoogleAuth({
         credentials: JSON.parse(process.env.GOOGLE_CREDENTIALS), // 환경 변수에서 읽어옴
         scopes: ['https://www.googleapis.com/auth/spreadsheets.readonly'],
