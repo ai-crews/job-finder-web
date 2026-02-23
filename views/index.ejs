@@ -79,7 +79,7 @@
 
                 <a href="<%= job[5] %>"
                    target="_blank"
-                   onclick="trackJobClick('<%= job[0] %>', '<%= job[2] %>', '<%= job[1] %>', 'web', 'web')"
+                   onclick="trackJobClick('<%= job[0].replace(/['"]/g, '') %>', '<%= job[2].replace(/[\[\]'"]/g, '') %>', '<%= job[1].replace(/['"]/g, '') %>', 'web', 'web')"
                    class="whitespace-nowrap text-center border-2 border-gray-200 px-2.5 py-1.5 md:px-8 md:py-3 rounded-lg md:rounded-xl font-bold text-[11px] md:text-base text-gray-700 hover:bg-gray-50 transition-colors shrink-0">
                     바로가기
                 </a>
