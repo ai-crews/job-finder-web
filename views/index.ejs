@@ -47,7 +47,7 @@
         <%# 1. 공고가 있을 때: 기존처럼 리스트 출력 %>
         <% jobs.forEach((job, index) => { %>
             <div class="job-card bg-white border border-gray-100 rounded-2xl p-3 md:p-8 mb-4 md:mb-6 flex flex-row items-center gap-2 md:gap-6 shadow-sm transition-all"
-                 data-job="<%= job[2] %>"
+                 data-job="<%= job[2].replace(/[\[\]'"]/g, '') %>"
                  data-date="<%= job[4] %>"
                  data-index="<%= index %>">
 
@@ -67,10 +67,10 @@
                     <h2 class="text-base md:text-3xl font-bold text-gray-900 mb-0.5 md:mb-2 truncate"><%= job[0] %></h2>
                     <div class="space-y-0.5 md:space-y-1 text-[11px] md:text-lg">
                         <p class="text-gray-700 truncate"><span class="font-bold">공고명</span> <%= job[1] %></p>
-                        <p class="text-gray-700 truncate"><span class="font-bold">직무명</span> <%= job[2] %></p>
+                        <p class="text-gray-700 truncate"><span class="font-bold">직무명</span> <%= job[2].replace(/[\[\]'"]/g, '') %></p>
                     </div>
                     <div class="mt-1.5 md:mt-4 flex flex-wrap items-center gap-1 md:gap-3 overflow-hidden">
-                        <span class="bg-[#FEF9C3] text-[#854D0E] px-1.5 md:px-3 py-0.5 md:py-1 rounded text-[10px] md:text-xs font-bold whitespace-nowrap"><%= job[3] %></span>
+                        <span class="bg-[#FEF9C3] text-[#854D0E] px-1.5 md:px-3 py-0.5 md:py-1 rounded text-[10px] md:text-xs font-bold whitespace-nowrap"><%= job[3].replace(/[\[\]'"]/g, '') %></span>
                         <span class="bg-[#FFEDD5] text-[#9A3412] px-1.5 md:px-2 py-0.5 md:py-1 rounded text-[10px] md:text-xs font-bold whitespace-nowrap truncate max-w-full">
                             🔥 <%= job[7] || 0 %>번 확인된 채용공고 입니다! 🔥
                         </span>
@@ -100,8 +100,7 @@
         </div>
 </main>
 
-<div id="pagination" class="flex justify-center gap-2 mt-8 mb-20">
-</div>
+<div id="scroll-sentinel" class="h-10 mb-20"></div>
 
 <footer class="bg-[#3E5F44] text-white py-16 text-center">
     <h2 class="text-5xl md:text-7xl mb-8 tracking-tighter" style="font-family: 'Alatsi', sans-serif;">
@@ -126,18 +125,17 @@
 
 
 <script>
-    let currentPage = 1;
-    const itemsPerPage = 10;
+    let currentVisibleCount = 10; // 처음에 보여줄 카드 개수
+    const itemsPerPage = 10;      // 스크롤할 때마다 추가로 보여줄 개수
 
-    // 페이지를 보여주는 핵심 함수
-    function renderPage() {
-        // 1. 현재 필터링된(숨겨지지 않은) 카드들만 추출
+    // 1. 카드를 화면에 그리는 함수 (페이지 번호 대신 개수 기반으로 변경)
+    function renderItems() {
         const allCards = Array.from(document.querySelectorAll('.job-card'));
-        const visibleCards = allCards.filter(card => !card.classList.contains('filtered-out'));
+        const matchedCards = allCards.filter(card => !card.classList.contains('filtered-out'));
 
-        // 🎯 추가: 필터링된 결과가 0개인지 확인
+        // 필터 결과 없음 메시지 처리
         const noResultMsg = document.getElementById('no-filter-results');
-        if (visibleCards.length === 0) {
+        if (matchedCards.length === 0) {
             if (noResultMsg) {
                 noResultMsg.classList.remove('hidden');
                 noResultMsg.classList.add('flex');
@@ -149,57 +147,67 @@
             }
         }
 
-        const totalPages = Math.ceil(visibleCards.length / itemsPerPage);
-
-        // 2. 모든 카드를 일단 숨김
+        // 일단 모든 카드를 숨김
         allCards.forEach(card => card.style.display = 'none');
 
-        // 3. 현재 페이지에 해당하는 카드만 보여줌
-        const start = (currentPage - 1) * itemsPerPage;
-        const end = start + itemsPerPage;
-
-        visibleCards.slice(start, end).forEach(card => {
-            card.style.display = 'flex';
+        // 필터링된 카드 중 0번부터 currentVisibleCount 개수까지만 보여줌
+        matchedCards.slice(0, currentVisibleCount).forEach(card => {
+            card.style.display = 'flex'; // 모바일 가로 배치를 위해 flex 유지
         });
 
-        // 4. 페이지네이션 버튼 생성
-        renderPaginationButtons(totalPages);
-    }
-
-    // 하단 숫자 버튼 생성
-    function renderPaginationButtons(totalPages) {
-        const paginationContainer = document.getElementById('pagination');
-        paginationContainer.innerHTML = '';
-
-        for (let i = 1; i <= totalPages; i++) {
-            const btn = document.createElement('button');
-            btn.innerText = i;
-            btn.className = `px-4 py-2 rounded-lg border ${i === currentPage ? 'bg-[#4c6b52] text-white border-[#3E5F44]' : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'}`;
-            btn.onclick = () => {
-                currentPage = i;
-                renderPage();
-                window.scrollTo(0, 0); // 페이지 이동 시 상단으로 스크롤
-            };
-            paginationContainer.appendChild(btn);
+        // 더 보여줄 카드가 남아있으면 감지용 박스 켜고, 다 보여줬으면 끔
+        const sentinel = document.getElementById('scroll-sentinel');
+        if (sentinel) {
+            if (currentVisibleCount < matchedCards.length) {
+                sentinel.style.display = 'block';
+            } else {
+                sentinel.style.display = 'none';
+            }
         }
     }
 
-    // 기존 필터 함수 수정
+    // 2. 무한 스크롤 감지 설정 (Intersection Observer)
+    function setupInfiniteScroll() {
+        const observer = new IntersectionObserver((entries) => {
+            // 감지용 박스가 화면에 보이면 loadMore 실행
+            if (entries[0].isIntersecting) {
+                loadMore();
+            }
+        }, { rootMargin: "150px" }); // 바닥에 닿기 150px 전에 미리 로드
+
+        const sentinel = document.getElementById('scroll-sentinel');
+        if (sentinel) {
+            observer.observe(sentinel);
+        }
+    }
+
+    // 3. 카드를 더 불러오는 함수
+    function loadMore() {
+        const allCards = Array.from(document.querySelectorAll('.job-card'));
+        const matchedCards = allCards.filter(card => !card.classList.contains('filtered-out'));
+
+        // 보여줄 카드가 더 남아있을 때만 개수를 늘리고 다시 렌더링
+        if (currentVisibleCount < matchedCards.length) {
+            currentVisibleCount += itemsPerPage;
+            renderItems();
+        }
+    }
+
+    // 4. 필터 함수 수정 (필터 클릭 시 처음부터 다시 보여주기)
     function filterJobs(category, element) {
-        // 1. 모든 필터 버튼의 스타일을 기본(연한 색)으로 초기화
         const buttons = document.querySelectorAll('.filter-btn');
         buttons.forEach(btn => {
             btn.classList.remove('bg-[#FDE68A]', 'border-yellow-500', 'font-bold');
             btn.classList.add('bg-[#FEF9C3]', 'border-[#FDE68A]', 'font-medium');
         });
 
-        // 2. 현재 클릭된 버튼만 진하게(강조) 변경
         element.classList.remove('bg-[#FEF9C3]', 'font-medium');
         element.classList.add('bg-[#FDE68A]', 'border-yellow-500', 'font-bold');
 
-        // 3. 기존 필터링 로직 수행
         const cards = document.querySelectorAll('.job-card');
-        currentPage = 1;
+
+        // 필터를 바꾸면 보여줄 카드 개수를 다시 10개로 초기화!
+        currentVisibleCount = itemsPerPage;
 
         cards.forEach(card => {
             const jobType = card.getAttribute('data-job');
@@ -210,7 +218,7 @@
             }
         });
 
-        renderPage();
+        renderItems();
     }
 
     function sortJobs() {
