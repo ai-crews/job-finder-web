@@ -42,7 +42,7 @@
     </div>
 </section>
 
-<main class="max-w-5xl mx-auto px-4 pb-20 min-h-[50vh]" id="job-list">
+<main class="max-w-5xl mx-auto px-4 pb-4 min-h-[50vh]" id="job-list">
     <% if (jobs && jobs.length > 0) { %>
         <%# 1. 공고가 있을 때: 기존처럼 리스트 출력 %>
         <% jobs.forEach((job, index) => { %>
@@ -66,7 +66,7 @@
                 <div class="flex-1 text-left">
                     <h2 class="text-lg md:text-3xl font-bold text-gray-900 mb-1 md:mb-2"><%= job[0] %></h2>
                     <div class="space-y-0.5 md:space-y-1 text-xs md:text-lg">
-                        <p class="text-gray-700 truncate"><span class="font-bold">채용공고</span> <%= job[1] %></p>
+                        <p class="text-gray-700 truncate"><span class="font-bold">공고명</span> <%= job[1] %></p>
                         <p class="text-gray-700 truncate"><span class="font-bold">직무명</span> <%= job[2] %></p>
                     </div>
                     <div class="mt-2 md:mt-4 flex flex-wrap items-center gap-1.5 md:gap-3">
