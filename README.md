@@ -88,8 +88,8 @@ GOOGLE_CREDENTIALS={"type": "service_account", "project_id": "...", "private_key
 
 ```
 
-## 📺 시연 영상 및 사진
-[![Job Finder 시연 영상](https://img.youtube.com/vi/uMQhQMBzzP8/0.jpg)](https://www.youtube.com/watch?v=uMQhQMBzzP8)
+## 📺 시연 영상
+[![Job Finder 시연 영상](https://img.youtube.com/vi/8Cn9gZXwCMI/0.jpg)](https://youtube.com/shorts/8Cn9gZXwCMI)
 
 ## 🛜 실제 이용 URL
 https://job-finder-web-production.up.railway.app/
