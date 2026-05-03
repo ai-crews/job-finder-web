@@ -5,7 +5,11 @@ const { google } = require('googleapis');
 const path = require('path');
 const mongoose = require('mongoose');
 
+const cors = require('cors'); // 앱인토스 관련
+
 const app = express();
+
+app.use(cors()); // 앱인토스가 데이터 가져갈 수 있도록
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -94,6 +98,29 @@ app.get('/', async (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(500).send("데이터 로딩 중 에러 발생");
+    }
+});
+
+// 🟢 [새로 추가하는 코드] 앱인토스(미니앱)를 위해 데이터만 보내주는 창구
+app.get('/api/sheet-jobs', async (req, res) => {
+    try {
+        const jobs = await getJobsFromSheet();
+
+        const formattedJobs = jobs.map((job, index) => ({
+            id: index,
+            company: job[0] || '',
+            title: job[1] || '',
+            job: job[2] ? job[2].replace(/[\[\]'"]/g, '').split(',').map(s => s.trim()) : [],
+            tag: job[3] ? job[3].replace(/[\[\]'"]/g, '') : '',
+            deadline: job[4] || '',
+            link: job[5] || '',
+            logo: job[6] || '',
+        }));
+
+        res.json(formattedJobs);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "시트 데이터 로딩 중 에러 발생" });
     }
 });
 
