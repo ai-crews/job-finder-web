@@ -9,7 +9,14 @@ const cors = require('cors'); // 앱인토스 관련
 
 const app = express();
 
-app.use(cors()); // 앱인토스가 데이터 가져갈 수 있도록
+// CORS 설정
+const corsOptions = {
+    origin: [
+        'https://jobfinder.apps.tossmini.com'
+    ],
+    optionsSuccessStatus: 200
+};
+app.use(cors(corsOptions));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
