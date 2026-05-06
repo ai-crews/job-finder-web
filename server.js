@@ -101,28 +101,75 @@ app.get('/', async (req, res) => {
     }
 });
 
-// 🟢 [새로 추가하는 코드] 앱인토스(미니앱)를 위해 데이터만 보내주는 창구
+// 파일명 변환 함수
+const sanitizeFilename = (name) => {
+    return name.replace(/[^a-z0-9가-힣]/gi, '_');
+};
+
 app.get('/api/sheet-jobs', async (req, res) => {
     try {
         const jobs = await getJobsFromSheet();
+        const allStats = await Click.find({});
 
-        const formattedJobs = jobs.map((job, index) => ({
-            id: index,
-            company: job[0] || '',
-            title: job[1] || '',
-            job: job[2] ? job[2].replace(/[\[\]'"]/g, '').split(',').map(s => s.trim()) : [],
-            tag: job[3] ? job[3].replace(/[\[\]'"]/g, '') : '',
-            deadline: job[4] || '',
-            link: job[5] || '',
-            logo: job[6] || '',
-        }));
+        const statsMap = {};
+        allStats.forEach(item => {
+            statsMap[item.recruitment_title] = item.count;
+        });
+
+        // 💡 핵심 변경: 하드코딩 대신 요청이 들어온 호스트 주소를 자동으로 감지합니다!
+        // 로컬에서는 http://localhost:3000 이 되고, Railway에서는 https://job-finder... 가 됩니다.
+        const protocol = req.headers['x-forwarded-proto'] || req.protocol;
+        const host = req.get('host');
+        const serverUrl = `${protocol}://${host}`;
+
+        const formattedJobs = jobs.map((job, index) => {
+            const companyName = job[0] || '';
+
+            const filename = `${sanitizeFilename(companyName)}.jpg`;
+            const autoLogoUrl = `${serverUrl}/logos/${encodeURIComponent(filename)}`;
+
+            return {
+                id: index,
+                company: companyName,
+                title: job[1] || '',
+                job: job[2] ? job[2].replace(/[\[\]'"]/g, '').split(',').map(s => s.trim()) : [],
+                tag: job[3] ? job[3].replace(/[\[\]'"]/g, '') : '',
+                deadline: job[4] || '',
+                link: job[5] || '',
+                logo: autoLogoUrl,
+                views: statsMap[job[1]] || 0
+            };
+        });
 
         res.json(formattedJobs);
     } catch (err) {
         console.error(err);
-        res.status(500).json({ error: "시트 데이터 로딩 중 에러 발생" });
+        res.status(500).json({ error: "데이터 로딩 중 에러 발생" });
     }
 });
+
+// // 🟢 [새로 추가하는 코드] 앱인토스(미니앱)를 위해 데이터만 보내주는 창구
+// app.get('/api/sheet-jobs', async (req, res) => {
+//     try {
+//         const jobs = await getJobsFromSheet();
+//
+//         const formattedJobs = jobs.map((job, index) => ({
+//             id: index,
+//             company: job[0] || '',
+//             title: job[1] || '',
+//             job: job[2] ? job[2].replace(/[\[\]'"]/g, '').split(',').map(s => s.trim()) : [],
+//             tag: job[3] ? job[3].replace(/[\[\]'"]/g, '') : '',
+//             deadline: job[4] || '',
+//             link: job[5] || '',
+//             logo: job[6] || '',
+//         }));
+//
+//         res.json(formattedJobs);
+//     } catch (err) {
+//         console.error(err);
+//         res.status(500).json({ error: "시트 데이터 로딩 중 에러 발생" });
+//     }
+// });
 
 // 5. 클릭수 증가 API: DB에 업데이트
 app.post('/api/jobs/click', async (req, res) => {
