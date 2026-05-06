@@ -70,6 +70,11 @@ async function getJobsFromSheet() {
     return response.data.values || [];
 }
 
+// 파일명 변환 함수
+const sanitizeFilename = (name) => {
+    return name.replace(/[^a-z0-9가-힣]/gi, '_');
+};
+
 app.get('/', async (req, res) => {
     try {
         const jobs = await getJobsFromSheet();
@@ -83,11 +88,25 @@ app.get('/', async (req, res) => {
             statsMap[item.recruitment_title] = item.count;
         });
 
-        // 시트 데이터에 클릭수 매칭
+        // 💡 웹 페이지에서도 현재 서버 주소를 감지하도록 추가
+        const protocol = req.headers['x-forwarded-proto'] || req.protocol;
+        const host = req.get('host');
+        const serverUrl = `${protocol}://${host}`;
+
+        // 시트 데이터에 클릭수 매칭 및 로고 주소 덮어쓰기
         const enrichedJobs = jobs.map(job => {
+            const companyName = job[0] || '';
             const title = job[1]; // 시트의 공고명
+
+            // 💡 로고 주소 조립 (API와 동일한 로직)
+            const filename = `${sanitizeFilename(companyName)}.jpg`;
+            const autoLogoUrl = `${serverUrl}/logos/${encodeURIComponent(filename)}`;
+
             const count = statsMap[title] || 0;
-            job[7] = count; // EJS에서 쓸 수 있게 7번 인덱스에 저장
+
+            job[6] = autoLogoUrl; // 👈 6번 인덱스(G열)의 외부 주소를 내 서버 이미지로 강제 교체!
+            job[7] = count;       // EJS에서 쓸 수 있게 7번 인덱스에 클릭수 저장
+
             return job;
         });
 
@@ -101,10 +120,7 @@ app.get('/', async (req, res) => {
     }
 });
 
-// 파일명 변환 함수
-const sanitizeFilename = (name) => {
-    return name.replace(/[^a-z0-9가-힣]/gi, '_');
-};
+
 
 app.get('/api/sheet-jobs', async (req, res) => {
     try {
